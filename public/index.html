@@ -1,0 +1,1432 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OntologyHub.ai — Development Blueprint</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-primary: #0a0b0f;
+  --bg-secondary: #12131a;
+  --bg-card: #181923;
+  --bg-card-hover: #1e1f2e;
+  --bg-sidebar: #0d0e14;
+  --border: #2a2b3a;
+  --border-subtle: #1e1f2e;
+  --text-primary: #e8e9f0;
+  --text-secondary: #8b8da0;
+  --text-muted: #5a5c70;
+  --accent: #6366f1;
+  --accent-light: #818cf8;
+  --accent-dim: rgba(99,102,241,0.12);
+  --green: #22c55e;
+  --green-dim: rgba(34,197,94,0.12);
+  --yellow: #eab308;
+  --yellow-dim: rgba(234,179,8,0.12);
+  --red: #ef4444;
+  --red-dim: rgba(239,68,68,0.12);
+  --cyan: #06b6d4;
+  --cyan-dim: rgba(6,182,212,0.12);
+  --orange: #f97316;
+  --orange-dim: rgba(249,115,22,0.12);
+  --pink: #ec4899;
+  --sidebar-w: 280px;
+  --header-h: 0px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+
+body {
+  font-family: 'Plus Jakarta Sans', 'Noto Sans KR', -apple-system, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.7;
+  font-size: 14.5px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Sidebar ─── */
+.sidebar {
+  position: fixed; top:0; left:0;
+  width: var(--sidebar-w); height:100vh;
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border-subtle);
+  overflow-y: auto; z-index: 100;
+  padding: 28px 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.sidebar-logo {
+  padding: 0 24px 24px;
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: 16px;
+}
+.sidebar-logo h1 {
+  font-size: 17px; font-weight: 700;
+  letter-spacing: -0.3px;
+  background: linear-gradient(135deg, var(--accent-light), var(--cyan));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.sidebar-logo .version {
+  font-size: 11px; color: var(--text-muted);
+  margin-top: 4px; font-weight: 500;
+  letter-spacing: 0.5px; text-transform: uppercase;
+}
+
+.sidebar-section {
+  padding: 8px 16px;
+  margin-top: 4px;
+}
+.sidebar-section-title {
+  font-size: 10px; font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  padding: 0 8px;
+  margin-bottom: 6px;
+}
+
+.nav-link {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 13px; font-weight: 500;
+  transition: all .15s;
+  cursor: pointer;
+}
+.nav-link:hover { background: var(--bg-card); color: var(--text-primary); }
+.nav-link.active { background: var(--accent-dim); color: var(--accent-light); }
+.nav-link .icon { width:18px; text-align:center; font-size:14px; flex-shrink:0; }
+.nav-link .phase-dot {
+  width:8px; height:8px; border-radius:50%;
+  flex-shrink:0;
+}
+
+/* ─── Main Content ─── */
+.main {
+  margin-left: var(--sidebar-w);
+  min-height: 100vh;
+  padding: 40px 48px 80px;
+  max-width: calc(100% - var(--sidebar-w));
+}
+
+.content-wrap {
+  max-width: 920px;
+  margin: 0 auto;
+}
+
+/* ─── Section Styles ─── */
+.section {
+  margin-bottom: 64px;
+  animation: fadeUp .4s ease-out;
+}
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(16px); }
+  to { opacity:1; transform:translateY(0); }
+}
+
+.section-header {
+  margin-bottom: 32px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.section-header h2 {
+  font-size: 26px; font-weight: 800;
+  letter-spacing: -0.5px;
+  margin-bottom: 8px;
+}
+.section-header .subtitle {
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.section-label {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 11px; font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  margin-bottom: 12px;
+  padding: 4px 10px;
+  border-radius: 4px;
+}
+
+h3 {
+  font-size: 19px; font-weight: 700;
+  letter-spacing: -0.3px;
+  margin: 32px 0 16px;
+  color: var(--text-primary);
+}
+
+h4 {
+  font-size: 15px; font-weight: 600;
+  margin: 24px 0 12px;
+  color: var(--text-primary);
+}
+
+p { margin-bottom: 14px; color: var(--text-secondary); }
+p strong { color: var(--text-primary); font-weight: 600; }
+
+/* ─── Hero ─── */
+.hero {
+  background: linear-gradient(135deg, rgba(99,102,241,0.06), rgba(6,182,212,0.04));
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 48px;
+  margin-bottom: 48px;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; top: -50%; right: -20%;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(99,102,241,0.08), transparent 70%);
+  border-radius: 50%;
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--accent-dim);
+  color: var(--accent-light);
+  font-size: 11px; font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+  margin-bottom: 20px;
+}
+.hero h1 {
+  font-size: 36px; font-weight: 800;
+  letter-spacing: -1px;
+  line-height: 1.2;
+  margin-bottom: 12px;
+  position: relative;
+}
+.hero .formula {
+  font-size: 16px;
+  color: var(--accent-light);
+  font-weight: 600;
+  margin-bottom: 20px;
+  padding: 12px 16px;
+  background: rgba(99,102,241,0.06);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+}
+.hero-meta {
+  display: flex; gap: 24px; flex-wrap: wrap;
+  font-size: 12px; color: var(--text-muted);
+}
+.hero-meta span { display:flex; align-items:center; gap:5px; }
+
+/* ─── Cards ─── */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 16px;
+  transition: border-color .2s;
+}
+.card:hover { border-color: var(--border); }
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 20px;
+}
+.stat-card .label {
+  font-size: 11px; font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 8px;
+}
+.stat-card .value {
+  font-size: 28px; font-weight: 800;
+  letter-spacing: -1px;
+}
+.stat-card .desc {
+  font-size: 12px; color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* ─── Tables ─── */
+.table-wrap {
+  overflow-x: auto;
+  margin: 16px 0;
+  border-radius: 10px;
+  border: 1px solid var(--border-subtle);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+thead { background: var(--bg-card); }
+th {
+  padding: 10px 16px;
+  text-align: left;
+  font-weight: 600;
+  color: var(--text-muted);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+td {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  vertical-align: top;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(255,255,255,0.015); }
+td code {
+  background: var(--bg-card);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--cyan);
+}
+
+/* ─── Code blocks ─── */
+pre {
+  background: #0d0e14;
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  padding: 20px;
+  overflow-x: auto;
+  margin: 16px 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: #c4c6d0;
+}
+code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12.5px;
+}
+.code-label {
+  font-size: 10px; font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+/* ─── Tags / Badges ─── */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 11px; font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 5px;
+  letter-spacing: 0.3px;
+}
+.badge-red { background: var(--red-dim); color: var(--red); }
+.badge-yellow { background: var(--yellow-dim); color: var(--yellow); }
+.badge-green { background: var(--green-dim); color: var(--green); }
+.badge-accent { background: var(--accent-dim); color: var(--accent-light); }
+.badge-cyan { background: var(--cyan-dim); color: var(--cyan); }
+.badge-orange { background: var(--orange-dim); color: var(--orange); }
+
+/* ─── Phase Cards ─── */
+.phase-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  padding: 28px;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.phase-card::before {
+  content: '';
+  position: absolute; top:0; left:0;
+  width: 4px; height: 100%;
+}
+.phase-card.phase-1::before { background: var(--red); }
+.phase-card.phase-2::before { background: var(--accent); }
+.phase-card.phase-3::before { background: var(--green); }
+.phase-card.phase-4::before { background: var(--cyan); }
+.phase-card.phase-5::before { background: var(--orange); }
+
+.phase-number {
+  font-size: 11px; font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.phase-card h3 { margin-top: 0; font-size: 20px; }
+.phase-subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-style: italic;
+  margin-bottom: 16px;
+}
+
+/* ─── Task list ─── */
+.task-list {
+  margin: 16px 0;
+}
+.task-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 13px;
+}
+.task-item:last-child { border-bottom: none; }
+.task-id {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 600;
+  color: var(--text-muted);
+  min-width: 36px;
+  padding-top: 2px;
+}
+.task-content { flex:1; }
+.task-title { font-weight: 600; color: var(--text-primary); }
+.task-desc { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+.task-priority { flex-shrink:0; }
+
+/* ─── API table ─── */
+.api-method {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.api-get { background: var(--green-dim); color: var(--green); }
+.api-post { background: var(--accent-dim); color: var(--accent-light); }
+.api-put { background: var(--yellow-dim); color: var(--yellow); }
+.api-delete { background: var(--red-dim); color: var(--red); }
+.api-ws { background: var(--cyan-dim); color: var(--cyan); }
+.api-all { background: var(--orange-dim); color: var(--orange); }
+
+/* ─── Architecture diagram ─── */
+.arch-diagram {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 32px;
+  margin: 20px 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  overflow-x: auto;
+  white-space: pre;
+  color: var(--text-secondary);
+}
+
+/* ─── Flow steps ─── */
+.flow-steps {
+  margin: 20px 0;
+  padding-left: 0;
+  list-style: none;
+}
+.flow-step {
+  display: flex; gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.flow-step:last-child { border-bottom: none; }
+.step-num {
+  width: 32px; height: 32px;
+  background: var(--accent-dim);
+  color: var(--accent-light);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700;
+  flex-shrink: 0;
+}
+.step-content h4 { margin: 0 0 4px; font-size: 14px; }
+.step-content p { margin:0; font-size: 13px; }
+
+/* ─── Checklist ─── */
+.checklist { margin: 16px 0; }
+.check-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 8px 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.check-box {
+  width: 18px; height: 18px;
+  border: 2px solid var(--border);
+  border-radius: 4px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* ─── KPI grid ─── */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+.kpi-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  padding: 16px;
+}
+.kpi-phase {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.kpi-value {
+  font-size: 22px; font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--text-primary);
+}
+.kpi-label {
+  font-size: 11px; color: var(--text-muted); margin-top: 2px;
+}
+
+/* ─── Pricing grid ─── */
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  margin: 16px 0;
+}
+.pricing-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+}
+.pricing-card.featured {
+  border-color: var(--accent);
+  background: linear-gradient(to bottom, rgba(99,102,241,0.06), var(--bg-card));
+}
+.pricing-name {
+  font-size: 14px; font-weight: 700;
+  margin-bottom: 8px;
+}
+.pricing-price {
+  font-size: 30px; font-weight: 800;
+  letter-spacing: -1px;
+}
+.pricing-price span { font-size: 14px; font-weight: 400; color: var(--text-muted); }
+.pricing-features {
+  margin-top: 16px; font-size: 12px;
+  color: var(--text-secondary);
+  text-align: left;
+}
+.pricing-features li {
+  padding: 4px 0;
+  list-style: none;
+}
+.pricing-features li::before {
+  content: '✓ '; color: var(--green);
+}
+
+/* ─── Comparison table ─── */
+.compare-highlight { color: var(--accent-light); font-weight: 600; }
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* ─── Print ─── */
+.print-btn {
+  position: fixed; bottom: 24px; right: 24px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 12px; font-weight: 600;
+  cursor: pointer;
+  z-index: 200;
+  transition: all .15s;
+  display: flex; align-items: center; gap: 6px;
+}
+.print-btn:hover { background: var(--bg-card-hover); color: var(--text-primary); }
+
+/* ─── Responsive ─── */
+@media (max-width: 1024px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; max-width: 100%; padding: 24px; }
+  .hero { padding: 32px; }
+  .hero h1 { font-size: 28px; }
+  .card-grid { grid-template-columns: 1fr; }
+  .pricing-grid { grid-template-columns: repeat(2, 1fr); }
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 640px) {
+  .pricing-grid { grid-template-columns: 1fr; }
+  .kpi-grid { grid-template-columns: 1fr; }
+  .hero-meta { flex-direction: column; gap: 8px; }
+}
+
+/* ─── Mobile nav ─── */
+.mobile-nav-btn {
+  display: none;
+  position: fixed; top: 16px; left: 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  font-size: 18px;
+  cursor: pointer;
+  z-index: 200;
+  align-items: center; justify-content: center;
+}
+@media (max-width: 1024px) {
+  .mobile-nav-btn { display: flex; }
+  .sidebar.open { display: block; z-index: 300; width: 280px; }
+  .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 250; }
+  .overlay.open { display: block; }
+}
+
+/* debt item */
+.debt-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 12px;
+}
+.debt-item h4 { margin: 0 0 8px; display: flex; align-items: center; gap: 8px; }
+</style>
+</head>
+<body>
+
+<!-- Mobile Nav -->
+<button class="mobile-nav-btn" onclick="toggleSidebar()">☰</button>
+<div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+<!-- Sidebar -->
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <h1>OntologyHub.ai</h1>
+    <div class="version">Development Blueprint v1.0</div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Overview</div>
+    <a class="nav-link active" href="#hero" onclick="closeSidebar()">
+      <span class="icon">◆</span> Executive Summary
+    </a>
+    <a class="nav-link" href="#principles" onclick="closeSidebar()">
+      <span class="icon">⚡</span> 개발 원칙
+    </a>
+    <a class="nav-link" href="#architecture" onclick="closeSidebar()">
+      <span class="icon">◈</span> 시스템 아키텍처
+    </a>
+    <a class="nav-link" href="#current-status" onclick="closeSidebar()">
+      <span class="icon">◇</span> 현재 상태 (v0.7)
+    </a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">기술 부채</div>
+    <a class="nav-link" href="#tech-debt" onclick="closeSidebar()">
+      <span class="icon">⚠</span> 부채 분석 & 해결
+    </a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Development Phases</div>
+    <a class="nav-link" href="#phase1" onclick="closeSidebar()">
+      <span class="phase-dot" style="background:var(--red)"></span> Phase 1 — 기반 강화
+    </a>
+    <a class="nav-link" href="#phase2" onclick="closeSidebar()">
+      <span class="phase-dot" style="background:var(--accent)"></span> Phase 2 — 대화형 엔진
+    </a>
+    <a class="nav-link" href="#phase3" onclick="closeSidebar()">
+      <span class="phase-dot" style="background:var(--green)"></span> Phase 3 — 마켓플레이스
+    </a>
+    <a class="nav-link" href="#phase4" onclick="closeSidebar()">
+      <span class="phase-dot" style="background:var(--cyan)"></span> Phase 4 — Guardrail API
+    </a>
+    <a class="nav-link" href="#phase5" onclick="closeSidebar()">
+      <span class="phase-dot" style="background:var(--orange)"></span> Phase 5 — 글로벌 확장
+    </a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Business</div>
+    <a class="nav-link" href="#pricing" onclick="closeSidebar()">
+      <span class="icon">◆</span> 수익 모델
+    </a>
+    <a class="nav-link" href="#kpi" onclick="closeSidebar()">
+      <span class="icon">◈</span> KPI & 목표
+    </a>
+    <a class="nav-link" href="#competition" onclick="closeSidebar()">
+      <span class="icon">◇</span> 경쟁 포지셔닝
+    </a>
+    <a class="nav-link" href="#links" onclick="closeSidebar()">
+      <span class="icon">⬡</span> 접속 정보
+    </a>
+  </div>
+</nav>
+
+<!-- Main Content -->
+<div class="main">
+<div class="content-wrap">
+
+<!-- ═══════════════════════════════════════ HERO ═══════════════════════════════════════ -->
+<section class="section" id="hero">
+  <div class="hero">
+    <div class="hero-badge">⬡ XRX Technology · Internal</div>
+    <h1>OntologyHub.ai<br>Development Blueprint</h1>
+    <div class="formula">"온톨로지의 GitHub" + "AI 환각 방지 인프라"</div>
+    <p style="max-width:640px; margin-bottom:24px;">AI 기반 개인·도메인 온톨로지 설계 플랫폼. 자연어 대화만으로 누구나 온톨로지를 생성하고, AI 환각을 구조적으로 제거하는 지식 인프라를 구축합니다.</p>
+    <div class="hero-meta">
+      <span>📅 2026-02-15</span>
+      <span>👤 Luke Park</span>
+      <span>🔒 Confidential</span>
+      <span>📌 v1.0</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ PRINCIPLES ═══════════════════════════════════════ -->
+<section class="section" id="principles">
+  <div class="section-header">
+    <div class="section-label badge-accent">Core Principles</div>
+    <h2>개발 원칙</h2>
+  </div>
+
+  <div class="card-grid">
+    <div class="card">
+      <h4>⚡ Continuous Deployment</h4>
+      <p>기능 하나가 완성되면 즉시 배포. 단계가 아닌 기능 단위 릴리즈.</p>
+    </div>
+    <div class="card">
+      <h4>👁 User-Facing First</h4>
+      <p>사용자가 만져볼 수 있는 것부터. 내부 구조보다 체감 기능 우선.</p>
+    </div>
+    <div class="card">
+      <h4>🤖 AI-First Architecture</h4>
+      <p>AI가 하드리프팅. 수동 스키마 설계 제거, 대화형 자동화.</p>
+    </div>
+    <div class="card">
+      <h4>🌍 글로벌 Day 1</h4>
+      <p>EN/KO 이중 언어 이미 구현. i18n 확장 가능 구조.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ ARCHITECTURE ═══════════════════════════════════════ -->
+<section class="section" id="architecture">
+  <div class="section-header">
+    <div class="section-label badge-cyan">System Architecture</div>
+    <h2>시스템 아키텍처</h2>
+    <div class="subtitle">v0.7 현재 구조 및 Phase 5 최종 목표 아키텍처</div>
+  </div>
+
+  <h3>현재 아키텍처 (v0.7)</h3>
+  <div class="arch-diagram">┌─ Frontend ──────────────────────────────────────┐
+│  Next.js 16 · React 19 · TypeScript 5           │
+│  Tailwind CSS 4 · Three.js · i18n (EN/KO)       │
+│  Vercel (ontologyhub.ai) — 자동 배포             │
+└──────────────────────┬──────────────────────────┘
+                       │ REST API + WebSocket
+┌──────────────────────▼──────────────────────────┐
+│  Backend                                         │
+│  FastAPI · Python 3.11+ · async                  │
+│  Gemini 2.0 Flash · Entity Extraction · RAG      │
+│  Railway — 자동 배포                              │
+└──────┬───────────────────────────┬──────────────┘
+       │                           │
+┌──────▼──────┐           ┌───────▼───────┐
+│  Neo4j Aura │           │  ChromaDB     │
+│  (Graph DB) │           │  (Vector DB)  │
+│  Cloud      │           │  Railway      │
+└─────────────┘           └───────────────┘</div>
+
+  <h3>최종 목표 아키텍처 (Phase 5)</h3>
+  <div class="arch-diagram">┌─ Frontend ─────────────────────────────────────────────┐
+│  Next.js · React · TypeScript · Tailwind · Three.js    │
+│  ├─ 대화형 온톨로지 디자이너                              │
+│  ├─ 3D 지식 그래프 에디터                                │
+│  ├─ Marketplace 브라우저                                │
+│  ├─ AI 채팅 (RAG)                                      │
+│  └─ Developer Portal                                   │
+│  Vercel (ontologyhub.ai)                               │
+└──────────────────────┬─────────────────────────────────┘
+                       │
+┌──────────────────────▼─────────────────────────────────┐
+│  API Gateway — FastAPI Backend                          │
+│  ├─ Auth Service (NextAuth + JWT)                      │
+│  ├─ Ontology Engine (CRUD + Versioning)                │
+│  ├─ AI Engine (Gemini → Entity Extraction + Design)    │
+│  ├─ GraphRAG Pipeline (Vector + Graph Hybrid)          │
+│  ├─ Guardrail API (외부 LLM 연동)                      │
+│  ├─ MCP Server (Claude/GPT 직접 연결)                  │
+│  ├─ Marketplace Service (검색, Fork, 결제)              │
+│  └─ Billing Service (Stripe)                           │
+│  Railway / AWS                                         │
+└──────┬──────────┬──────────┬──────────┬───────────────┘
+       │          │          │          │
+┌──────▼──┐ ┌────▼────┐ ┌──▼──────┐ ┌─▼─────┐
+│ Neo4j   │ │Pinecone │ │PostgreSQL│ │ Redis │
+│ Aura    │ │Weaviate │ │         │ │       │
+│(Graph)  │ │(Vector) │ │(Meta)   │ │(Cache)│
+└─────────┘ └─────────┘ └─────────┘ └───────┘</div>
+</section>
+
+<!-- ═══════════════════════════════════════ CURRENT STATUS ═══════════════════════════════════════ -->
+<section class="section" id="current-status">
+  <div class="section-header">
+    <div class="section-label badge-green">Current Status</div>
+    <h2>현재 구현 상태 (v0.7)</h2>
+  </div>
+
+  <h3>기술 스택</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>레이어</th><th>기술</th><th>상태</th><th>비고</th></tr></thead>
+      <tbody>
+        <tr><td>Frontend</td><td>Next.js 16 · React 19 · TS 5 · Tailwind 4 · Three.js</td><td><span class="badge badge-green">✅ 완료</span></td><td>Vercel 자동배포</td></tr>
+        <tr><td>Backend</td><td>FastAPI · Python 3.11+ · async</td><td><span class="badge badge-green">✅ 완료</span></td><td>Railway 자동배포</td></tr>
+        <tr><td>AI Engine</td><td>Gemini 2.0 Flash · Entity Extraction · RAG</td><td><span class="badge badge-green">✅ 완료</span></td><td>10종 노드, 12종 관계</td></tr>
+        <tr><td>Graph DB</td><td>Neo4j Aura (Cloud)</td><td><span class="badge badge-green">✅ 완료</span></td><td>55 노드 · 246 엣지</td></tr>
+        <tr><td>Vector DB</td><td>ChromaDB (Railway)</td><td><span class="badge badge-yellow">⚠️ 주의</span></td><td>재배포 시 초기화</td></tr>
+        <tr><td>Auth</td><td>없음</td><td><span class="badge badge-red">🔴 필수</span></td><td>최우선 해결</td></tr>
+        <tr><td>Multi-user</td><td>미구현</td><td><span class="badge badge-red">🔴 필수</span></td><td>그래프 격리 필요</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>현재 API 엔드포인트 (11개)</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>메서드</th><th>경로</th><th>기능</th><th>상태</th></tr></thead>
+      <tbody>
+        <tr><td><span class="api-method api-get">GET</span></td><td><code>/api/status</code></td><td>시스템 상태 확인</td><td><span class="badge badge-green">✅</span></td></tr>
+        <tr><td><span class="api-method api-post">POST</span></td><td><code>/api/onboard</code></td><td>Google 데이터 온보딩</td><td><span class="badge badge-green">✅</span></td></tr>
+        <tr><td><span class="api-method api-post">POST</span></td><td><code>/api/upload/resume</code></td><td>이력서 PDF 업로드 + AI 분석</td><td><span class="badge badge-green">✅</span></td></tr>
+        <tr><td><span class="api-method api-post">POST</span></td><td><code>/api/enrich</code></td><td>AI 딥 분석</td><td><span class="badge badge-green">✅</span></td></tr>
+        <tr><td><span class="api-method api-get">GET</span></td><td><code>/api/nebula</code></td><td>3D 시각화 데이터</td><td><span class="badge badge-green">✅</span></td></tr>
+        <tr><td><span class="api-method api-get">GET</span></td><td><code>/api/nebula/search</code></td><td>검색 + 3D 좌표</td><td><span class="badge badge-green">✅</span></td></tr>
+        <tr><td><span class="api-method api-get">GET</span></td><td><code>/api/graph/node/{id}</code></td><td>노드 상세 + 관계 조회</td><td><span class="badge badge-green">✅</span></td></tr>
+        <tr><td><span class="api-method api-post">POST</span></td><td><code>/api/graph/query</code></td><td>Cypher 쿼리 실행</td><td><span class="badge badge-red">⚠️ 삭제예정</span></td></tr>
+        <tr><td><span class="api-method api-post">POST</span></td><td><code>/api/chat</code></td><td>RAG 기반 AI 채팅</td><td><span class="badge badge-green">✅</span></td></tr>
+        <tr><td><span class="api-method api-ws">WS</span></td><td><code>/ws/chat</code></td><td>WebSocket 실시간 채팅</td><td><span class="badge badge-green">✅</span></td></tr>
+        <tr><td><span class="api-method api-ws">WS</span></td><td><code>/ws/chat</code> (search)</td><td>WebSocket 실시간 검색</td><td><span class="badge badge-green">✅</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>구현 완료 기능 요약</h3>
+  <div class="card-grid">
+    <div class="card">
+      <h4>📥 데이터 수집</h4>
+      <p>Google 프로필/캘린더/YouTube, 이력서 PDF 파싱</p>
+    </div>
+    <div class="card">
+      <h4>🧠 AI 분석</h4>
+      <p>엔티티 추출 (10종 노드), 딥 분석 (30+ 노드, 50+ 관계), 추론 관계, RAG 하이브리드 (벡터 60% + 그래프 40%)</p>
+    </div>
+    <div class="card">
+      <h4>🎨 프론트엔드</h4>
+      <p>3D 지식 그래프, AI 채팅 패널, 그래프 검색, 노드 상세, 다크/라이트, EN/KO, 반응형</p>
+    </div>
+    <div class="card">
+      <h4>⚙️ 인프라</h4>
+      <p>Vercel/Railway 자동배포, ontologyhub.ai 도메인, SSL, WebSocket</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ TECH DEBT ═══════════════════════════════════════ -->
+<section class="section" id="tech-debt">
+  <div class="section-header">
+    <div class="section-label badge-red">Technical Debt</div>
+    <h2>기술 부채 분석 & 해결 방안</h2>
+    <div class="subtitle">프로덕션 오픈 전 반드시 해결해야 할 8가지 기술 부채</div>
+  </div>
+
+  <h3>해결 우선순위</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>순서</th><th>항목</th><th>심각도</th><th>소요 시간</th></tr></thead>
+      <tbody>
+        <tr><td>🔥 즉시</td><td>Cypher 인젝션 — 엔드포인트 삭제</td><td><span class="badge badge-red">🔴 높음</span></td><td>10분</td></tr>
+        <tr><td>1순위</td><td>NextAuth + JWT 인증 체계</td><td><span class="badge badge-red">🔴 높음</span></td><td>2~3일</td></tr>
+        <tr><td>2순위</td><td>Railway Volume + Rate Limiting</td><td><span class="badge badge-yellow">🟡 중간</span></td><td>1일</td></tr>
+        <tr><td>3순위</td><td>Google OAuth 프로덕션 승인</td><td><span class="badge badge-yellow">🟡 중간</span></td><td>신청 후 2~4주</td></tr>
+        <tr><td>Phase 2</td><td>노드 CRUD + Export</td><td><span class="badge badge-green">🟢 낮음</span></td><td>기능 개발에 포함</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="debt-item">
+    <h4><span class="badge badge-red">🔴 높음</span> 1. API 인증 없음</h4>
+    <p>백엔드 API에 인증이 없어서 누구나 엔드포인트 호출 가능</p>
+    <p><strong>해결:</strong> FastAPI에 JWT Bearer 토큰 미들웨어 추가. NextAuth → JWT 발급 → 모든 API에 <code>Authorization: Bearer {token}</code> 강제</p>
+    <pre>from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+import jwt
+
+security = HTTPBearer()
+
+async def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    payload = jwt.decode(credentials.credentials, SECRET_KEY, algorithms=["HS256"])
+    return payload["user_id"]</pre>
+  </div>
+
+  <div class="debt-item">
+    <h4><span class="badge badge-red">🔴 높음</span> 2. Admin 인증 — sessionStorage</h4>
+    <p>sessionStorage에 비밀번호 저장, 클라이언트에서만 체크</p>
+    <p><strong>해결:</strong> NextAuth.js 서버사이드 세션으로 교체 + httpOnly 쿠키 + 미들웨어 차단</p>
+    <pre>// middleware.ts
+export { default } from "next-auth/middleware"
+export const config = { matcher: ["/dashboard/:path*", "/nebula/:path*"] }</pre>
+  </div>
+
+  <div class="debt-item">
+    <h4><span class="badge badge-red">🔴 높음</span> 3. Cypher 인젝션 위험</h4>
+    <p><code>/api/graph/query</code>에서 사용자 입력이 Cypher 쿼리에 직접 삽입</p>
+    <p><strong>해결:</strong> 엔드포인트 삭제 → 파라미터화된 전용 엔드포인트로 대체</p>
+    <pre>result = neo4j.run(
+    "MATCH (n) WHERE elementId(n) = $id AND n.owner_id = $uid RETURN n",
+    {"id": node_id, "uid": user_id}
+)</pre>
+  </div>
+
+  <div class="debt-item">
+    <h4><span class="badge badge-yellow">🟡 중간</span> 4. ChromaDB 재배포 시 데이터 유실</h4>
+    <p><strong>해결:</strong> Railway Volume Mount 즉시 적용 → 장기적으로 Pinecone/Weaviate 전환</p>
+    <pre># railway.toml
+[[mounts]]
+  source = "chroma_data"
+  mountPath = "/data/chroma_db"</pre>
+  </div>
+
+  <div class="debt-item">
+    <h4><span class="badge badge-yellow">🟡 중간</span> 5. Rate Limiting 없음</h4>
+    <p>Gemini API 호출 제한 없음 → 비용 폭탄 가능</p>
+    <p><strong>해결:</strong> slowapi + 유저 플랜별 차등 제한</p>
+    <pre>@app.post("/api/chat")
+@limiter.limit("10/minute")  # Free tier
+async def chat(request: Request, user_id: str = Depends(verify_token)):
+    ...</pre>
+  </div>
+
+  <div class="debt-item">
+    <h4><span class="badge badge-yellow">🟡 중간</span> 6. Google OAuth 테스트 모드</h4>
+    <p><strong>해결:</strong> 프로덕션 전환 신청 (개인정보 처리방침 URL + 서비스 약관 + 앱 로고 제출). Incremental Auth 방식 — 기본 로그인 먼저 승인, 데이터 연동은 별도 요청 (CASA Tier 2, 2~4주)</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ PHASE 1 ═══════════════════════════════════════ -->
+<section class="section" id="phase1">
+  <div class="section-header">
+    <div class="section-label badge-red">Phase 1</div>
+    <h2>Foundation & Security Hardening</h2>
+    <div class="subtitle">프로덕션 레디 인프라 · 다중 사용자 · 보안</div>
+  </div>
+
+  <div class="phase-card phase-1">
+    <div class="phase-number" style="color:var(--red)">기획 의도</div>
+    <p>현재 '데모용 프로토타입'을 '실제 사용자가 가입하고 쓸 수 있는 서비스'로 전환. 기능 추가보다 <strong>기존 기능의 안전한 운영</strong>이 핵심. 인증 없이 API가 열려있고, 단일 사용자만 가능한 현재 상태에서는 어떤 마케팅도 무의미하다.</p>
+  </div>
+
+  <h3>핵심 개발 태스크</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>#</th><th>태스크</th><th>설명</th><th>우선순위</th><th>의존성</th></tr></thead>
+      <tbody>
+        <tr><td>1-1</td><td><strong>NextAuth + JWT</strong></td><td>Google OAuth 로그인, JWT 토큰, API 인증 미들웨어</td><td><span class="badge badge-red">필수</span></td><td>없음</td></tr>
+        <tr><td>1-2</td><td><strong>유저별 그래프 격리</strong></td><td>Neo4j owner_id 기반 노드 소유권, 모든 Cypher에 WHERE 필터</td><td><span class="badge badge-red">필수</span></td><td>1-1</td></tr>
+        <tr><td>1-3</td><td><strong>Cypher 인젝션 방지</strong></td><td>/api/graph/query 삭제 또는 파라미터화</td><td><span class="badge badge-red">필수</span></td><td>1-2</td></tr>
+        <tr><td>1-4</td><td><strong>Rate Limiting</strong></td><td>slowapi, Free 10회/일 · Pro 100회/일</td><td><span class="badge badge-red">필수</span></td><td>1-1</td></tr>
+        <tr><td>1-5</td><td><strong>ChromaDB 영속 저장소</strong></td><td>Railway Volume 또는 Pinecone 전환</td><td><span class="badge badge-red">필수</span></td><td>없음</td></tr>
+        <tr><td>1-6</td><td><strong>Google OAuth 프로덕션</strong></td><td>동의 화면 전환 + 개인정보처리방침</td><td><span class="badge badge-red">필수</span></td><td>1-1</td></tr>
+        <tr><td>1-7</td><td><strong>온보딩 플로우</strong></td><td>가입 → Google 연동 → 첫 온톨로지 3분 이내</td><td><span class="badge badge-red">필수</span></td><td>1-1, 1-2</td></tr>
+        <tr><td>1-8</td><td><strong>에러 핸들링</strong></td><td>전역 에러 바운더리, API 에러 코드 표준화</td><td><span class="badge badge-yellow">중간</span></td><td>없음</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>API 변경사항</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>메서드</th><th>엔드포인트</th><th>변경</th></tr></thead>
+      <tbody>
+        <tr><td><span class="api-method api-post">POST</span></td><td><code>/api/auth/signin</code></td><td>신규 — NextAuth Google OAuth</td></tr>
+        <tr><td><span class="api-method api-post">POST</span></td><td><code>/api/auth/signout</code></td><td>신규 — 세션 종료</td></tr>
+        <tr><td><span class="api-method api-get">GET</span></td><td><code>/api/auth/session</code></td><td>신규 — 현재 세션/유저 정보</td></tr>
+        <tr><td><span class="api-method api-all">ALL</span></td><td>모든 기존 API</td><td>변경 — Bearer JWT 필수</td></tr>
+        <tr><td><span class="api-method api-post">POST</span></td><td><code>/api/graph/query</code></td><td><strong style="color:var(--red)">삭제</strong></td></tr>
+        <tr><td><span class="api-method api-get">GET</span></td><td><code>/api/user/profile</code></td><td>신규 — 유저 프로필</td></tr>
+        <tr><td><span class="api-method api-get">GET</span></td><td><code>/api/user/usage</code></td><td>신규 — 사용량 조회</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Neo4j 스키마 변경</h3>
+  <p>모든 노드에 <code>owner_id</code> 속성 추가. 기존 데이터는 마이그레이션 스크립트로 admin 유저에 할당.</p>
+
+  <h3>완료 기준 (DoD)</h3>
+  <div class="checklist">
+    <div class="check-item"><div class="check-box"></div> 신규 유저 가입 → 빈 그래프 → Google 온보딩 → 3D 그래프 확인 전체 플로우</div>
+    <div class="check-item"><div class="check-box"></div> 유저 A 데이터가 유저 B에게 절대 노출 안 됨 (크로스 유저 격리 테스트)</div>
+    <div class="check-item"><div class="check-box"></div> 인증 없는 API 호출 시 401 Unauthorized</div>
+    <div class="check-item"><div class="check-box"></div> Rate limit 초과 시 429 Too Many Requests + 남은 시간 안내</div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ PHASE 2 ═══════════════════════════════════════ -->
+<section class="section" id="phase2">
+  <div class="section-header">
+    <div class="section-label badge-accent">Phase 2</div>
+    <h2>Conversational Ontology Engine</h2>
+    <div class="subtitle">AI 대화형 온톨로지 설계 — 핵심 차별화 기능</div>
+  </div>
+
+  <div class="phase-card phase-2">
+    <div class="phase-number" style="color:var(--accent-light)">기획 의도</div>
+    <p>OntologyHub의 <strong>핵심 차별화 기능</strong>. 현재는 Google 데이터를 AI가 자동 추출하는 수동적 파이프라인. Phase 2에서는 사용자가 AI와 '대화'하면서 자신의 온톨로지를 설계하는 능동적 경험을 구축한다.</p>
+    <p>"나는 제조업에서 품질관리를 담당하는데, 우리 공장의 공정 온톨로지를 만들고 싶어" → AI가 스키마를 제안 → 사용자가 수정 → 최종 확정</p>
+    <p>기존 Protégé/TopBraid는 OWL/RDF를 알아야 하지만, <strong>OntologyHub는 자연어만 알면 된다.</strong></p>
+  </div>
+
+  <h3>핵심 개발 태스크</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>#</th><th>태스크</th><th>설명</th><th>우선순위</th></tr></thead>
+      <tbody>
+        <tr><td>2-1</td><td><strong>Ontology Design Chat</strong></td><td>AI가 도메인 파악 → 스키마 제안 → 확인/수정 루프</td><td><span class="badge badge-red">필수</span></td></tr>
+        <tr><td>2-2</td><td><strong>Schema Template Engine</strong></td><td>산업별 온톨로지 템플릿 10개</td><td><span class="badge badge-red">필수</span></td></tr>
+        <tr><td>2-3</td><td><strong>노드/엣지 CRUD UI</strong></td><td>3D 그래프 직접 편집, 드래그앤드롭</td><td><span class="badge badge-red">필수</span></td></tr>
+        <tr><td>2-4</td><td><strong>온톨로지 버전 관리</strong></td><td>스냅샷 + diff + 롤백 (Git 컨셉)</td><td><span class="badge badge-yellow">중간</span></td></tr>
+        <tr><td>2-5</td><td><strong>Import/Export</strong></td><td>OWL, RDF, JSON-LD, CSV</td><td><span class="badge badge-red">필수</span></td></tr>
+        <tr><td>2-6</td><td><strong>LinkedIn 연동</strong></td><td>경력/스킬/네트워크 온톨로지 자동 생성</td><td><span class="badge badge-yellow">중간</span></td></tr>
+        <tr><td>2-7</td><td><strong>GitHub 연동</strong></td><td>저장소/기여/기술스택 온톨로지</td><td><span class="badge badge-yellow">중간</span></td></tr>
+        <tr><td>2-8</td><td><strong>스키마 시각화 에디터</strong></td><td>Three.js에서 엔티티/관계 드래그 정의</td><td><span class="badge badge-red">필수</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Ontology Design Chat 플로우</h3>
+  <div class="flow-steps">
+    <div class="flow-step"><div class="step-num">1</div><div class="step-content"><h4>도메인 탐색</h4><p>AI가 질문 3~5개로 도메인 범위 확정</p></div></div>
+    <div class="flow-step"><div class="step-num">2</div><div class="step-content"><h4>스키마 초안 생성</h4><p>엔티티/관계/속성 JSON-LD 제안 + 3D 그래프 프리뷰 동시 표시</p></div></div>
+    <div class="flow-step"><div class="step-num">3</div><div class="step-content"><h4>반복 수정</h4><p>사용자 피드백 실시간 반영 — "이 관계 삭제해줘" / "여기에 엔티티 추가"</p></div></div>
+    <div class="flow-step"><div class="step-num">4</div><div class="step-content"><h4>인스턴스 채우기</h4><p>텍스트/문서/URL 입력 → AI가 스키마에 맞춰 엔티티 추출</p></div></div>
+    <div class="flow-step"><div class="step-num">5</div><div class="step-content"><h4>확정 및 저장</h4><p>온톨로지 이름 지정 → Neo4j 영구 저장 → Export 제공</p></div></div>
+  </div>
+
+  <h3>신규 API (Phase 2)</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>메서드</th><th>엔드포인트</th><th>기능</th></tr></thead>
+      <tbody>
+        <tr><td><span class="api-method api-post">POST</span></td><td><code>/api/ontology/create</code></td><td>새 온톨로지 프로젝트 생성</td></tr>
+        <tr><td><span class="api-method api-get">GET</span></td><td><code>/api/ontology/{id}</code></td><td>온톨로지 상세 (스키마 + 인스턴스)</td></tr>
+        <tr><td><span class="api-method api-put">PUT</span></td><td><code>/api/ontology/{id}</code></td><td>스키마/메타데이터 수정</td></tr>
+        <tr><td><span class="api-method api-delete">DEL</span></td><td><code>/api/ontology/{id}</code></td><td>온톨로지 삭제</td></tr>
+        <tr><td><span class="api-method api-post">POST</span></td><td><code>/api/ontology/{id}/chat</code></td><td>대화형 설계 채팅</td></tr>
+        <tr><td><span class="api-method api-post">POST</span></td><td><code>/api/ontology/{id}/node</code></td><td>노드 생성</td></tr>
+        <tr><td><span class="api-method api-put">PUT</span></td><td><code>/api/ontology/{id}/node/{nid}</code></td><td>노드 수정</td></tr>
+        <tr><td><span class="api-method api-delete">DEL</span></td><td><code>/api/ontology/{id}/node/{nid}</code></td><td>노드 삭제</td></tr>
+        <tr><td><span class="api-method api-post">POST</span></td><td><code>/api/ontology/{id}/edge</code></td><td>관계 생성</td></tr>
+        <tr><td><span class="api-method api-post">POST</span></td><td><code>/api/ontology/{id}/export</code></td><td>Export (OWL/JSON-LD 등)</td></tr>
+        <tr><td><span class="api-method api-post">POST</span></td><td><code>/api/ontology/{id}/import</code></td><td>Import</td></tr>
+        <tr><td><span class="api-method api-get">GET</span></td><td><code>/api/ontology/{id}/versions</code></td><td>버전 히스토리</td></tr>
+        <tr><td><span class="api-method api-post">POST</span></td><td><code>/api/ontology/{id}/snapshot</code></td><td>스냅샷 저장</td></tr>
+        <tr><td><span class="api-method api-post">POST</span></td><td><code>/api/connect/linkedin</code></td><td>LinkedIn OAuth</td></tr>
+        <tr><td><span class="api-method api-post">POST</span></td><td><code>/api/connect/github</code></td><td>GitHub API</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Neo4j 스키마 확장</h3>
+  <pre>(:Ontology { id, name, description, owner_id, schema_json, created_at, updated_at, version })
+
+(:Node)-[:BELONGS_TO]->(:Ontology)
+
+(:Snapshot { version, timestamp, data_json })-[:SNAPSHOT_OF]->(:Ontology)</pre>
+
+  <h3>완료 기준</h3>
+  <div class="checklist">
+    <div class="check-item"><div class="check-box"></div> AI와 5턴 이내 대화로 10+ 엔티티, 15+ 관계 온톨로지 생성</div>
+    <div class="check-item"><div class="check-box"></div> 3D 그래프에서 노드 추가/삭제/관계 수정 실시간 반영</div>
+    <div class="check-item"><div class="check-box"></div> OWL/JSON-LD Export → Protégé Import 확인</div>
+    <div class="check-item"><div class="check-box"></div> LinkedIn/GitHub 온톨로지와 Google 온톨로지 병합 가능</div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ PHASE 3 ═══════════════════════════════════════ -->
+<section class="section" id="phase3">
+  <div class="section-header">
+    <div class="section-label badge-green">Phase 3</div>
+    <h2>Marketplace & Community</h2>
+    <div class="subtitle">온톨로지 공유 · 거래 · Fork · 협업 생태계</div>
+  </div>
+
+  <div class="phase-card phase-3">
+    <div class="phase-number" style="color:var(--green)">기획 의도</div>
+    <p>OntologyHub를 <strong>'개인 도구'에서 '플랫폼'으로 전환</strong>. GitHub이 코드 저장소에서 개발자 생태계가 된 것처럼, 온톨로지 생태계의 중심으로 만든다.</p>
+    <p><strong>핵심 인사이트:</strong> 온톨로지는 처음부터 만드는 것이 가장 어렵다. 좋은 템플릿에서 시작하면 시간의 80%를 절약할 수 있다.</p>
+  </div>
+
+  <h3>핵심 개발 태스크</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>#</th><th>태스크</th><th>설명</th><th>우선순위</th></tr></thead>
+      <tbody>
+        <tr><td>3-1</td><td><strong>Marketplace 프론트엔드</strong></td><td>탐색/검색/필터링, 카테고리 브라우징</td><td><span class="badge badge-red">필수</span></td></tr>
+        <tr><td>3-2</td><td><strong>Public/Private</strong></td><td>공개 → Marketplace, 비공개 → 본인만</td><td><span class="badge badge-red">필수</span></td></tr>
+        <tr><td>3-3</td><td><strong>Fork & Customize</strong></td><td>복제 → 수정, 원본 링크 유지</td><td><span class="badge badge-red">필수</span></td></tr>
+        <tr><td>3-4</td><td><strong>평점 & 리뷰</strong></td><td>품질 평가 + 활용 사례 공유</td><td><span class="badge badge-yellow">중간</span></td></tr>
+        <tr><td>3-5</td><td><strong>결제 (Stripe)</strong></td><td>유료 판매, 크리에이터 80:20 분배</td><td><span class="badge badge-yellow">중간</span></td></tr>
+        <tr><td>3-6</td><td><strong>팀 워크스페이스</strong></td><td>역할 권한 (Owner/Editor/Viewer)</td><td><span class="badge badge-yellow">중간</span></td></tr>
+        <tr><td>3-7</td><td><strong>Quality Score</strong></td><td>AI 자동 품질 평가</td><td><span class="badge badge-accent">예정</span></td></tr>
+        <tr><td>3-8</td><td><strong>실시간 협업</strong></td><td>CRDT 기반 동시 편집</td><td><span class="badge badge-accent">예정</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>완료 기준</h3>
+  <div class="checklist">
+    <div class="check-item"><div class="check-box"></div> 공개 → Fork → 커스터마이즈 → 활용 전체 플로우</div>
+    <div class="check-item"><div class="check-box"></div> Stripe 결제로 Pro 구독 → 기능 잠금 해제</div>
+    <div class="check-item"><div class="check-box"></div> 팀 워크스페이스에서 2명+ 공동 편집</div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ PHASE 4 ═══════════════════════════════════════ -->
+<section class="section" id="phase4">
+  <div class="section-header">
+    <div class="section-label badge-cyan">Phase 4</div>
+    <h2>Guardrail API & RAG Infrastructure</h2>
+    <div class="subtitle">AI 환각 방지 API — B2B 인프라 확장</div>
+  </div>
+
+  <div class="phase-card phase-4">
+    <div class="phase-number" style="color:var(--cyan)">기획 의도</div>
+    <p>B2C 도구 → <strong>B2B 인프라 확장</strong>. 기업 AI 에이전트/챗봇에 OntologyHub 온톨로지를 연결 → AI가 도메인 지식 구조 안에서만 추론 → <strong>환각을 구조적으로 차단</strong>.</p>
+    <p><strong>핵심 가치 제안:</strong> "당신의 AI가 헛소리하지 않게 만들어주는 API"</p>
+  </div>
+
+  <h3>Guardrail API 동작 플로우</h3>
+  <div class="flow-steps">
+    <div class="flow-step"><div class="step-num">①</div><div class="step-content"><h4>외부 앱 호출</h4><p>POST /api/guardrail/query { question, ontology_id, llm_response(optional) }</p></div></div>
+    <div class="flow-step"><div class="step-num">②</div><div class="step-content"><h4>GraphRAG 검색</h4><p>해당 온톨로지 지식그래프에서 벡터+그래프 하이브리드 검색</p></div></div>
+    <div class="flow-step"><div class="step-num">③</div><div class="step-content"><h4>컨텍스트 반환</h4><p>검증된 structured context (entities, relations, properties, sources)</p></div></div>
+    <div class="flow-step"><div class="step-num">④</div><div class="step-content"><h4>Fact-Check (선택)</h4><p>llm_response 포함 시 → 온톨로지 기반 검증 (pass/fail/partial) + 근거</p></div></div>
+    <div class="flow-step"><div class="step-num">⑤</div><div class="step-content"><h4>외부 앱 활용</h4><p>컨텍스트를 LLM 프롬프트에 삽입하거나 검증 결과로 필터링</p></div></div>
+  </div>
+
+  <h3>핵심 개발 태스크</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>#</th><th>태스크</th><th>설명</th><th>우선순위</th></tr></thead>
+      <tbody>
+        <tr><td>4-1</td><td><strong>Guardrail API</strong></td><td>외부 LLM 연동 REST API</td><td><span class="badge badge-red">필수</span></td></tr>
+        <tr><td>4-2</td><td><strong>GraphRAG 고도화</strong></td><td>엔터프라이즈급 벡터+그래프 파이프라인</td><td><span class="badge badge-red">필수</span></td></tr>
+        <tr><td>4-3</td><td><strong>MCP Server</strong></td><td>Claude/GPT 직접 연결</td><td><span class="badge badge-red">필수</span></td></tr>
+        <tr><td>4-4</td><td><strong>Validation Engine</strong></td><td>AI 응답 스키마 부합 실시간 검증</td><td><span class="badge badge-yellow">중간</span></td></tr>
+        <tr><td>4-5</td><td><strong>API Key 관리</strong></td><td>발급/관리/사용량 모니터링</td><td><span class="badge badge-red">필수</span></td></tr>
+        <tr><td>4-6</td><td><strong>Developer Portal</strong></td><td>API 문서, SDK, Playground</td><td><span class="badge badge-yellow">중간</span></td></tr>
+        <tr><td>4-7</td><td><strong>문서→온톨로지 자동변환</strong></td><td>PDF/웹/노션 → 온톨로지 → GraphRAG</td><td><span class="badge badge-red">필수</span></td></tr>
+        <tr><td>4-8</td><td><strong>환각 탐지 대시보드</strong></td><td>정확도 메트릭, 검증 로그</td><td><span class="badge badge-accent">예정</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>완료 기준</h3>
+  <div class="checklist">
+    <div class="check-item"><div class="check-box"></div> <code>pip install ontologyhub</code> → 3줄 코드로 컨텍스트 조회</div>
+    <div class="check-item"><div class="check-box"></div> MCP Server로 Claude Desktop에서 직접 온톨로지 참조</div>
+    <div class="check-item"><div class="check-box"></div> Guardrail 적용 vs 미적용 환각률 비교 → 70%+ 감소</div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ PHASE 5 ═══════════════════════════════════════ -->
+<section class="section" id="phase5">
+  <div class="section-header">
+    <div class="section-label badge-orange">Phase 5</div>
+    <h2>Global Scale & Intelligence</h2>
+    <div class="subtitle">글로벌 온톨로지 인프라 · 자율 진화 시스템</div>
+  </div>
+
+  <div class="phase-card phase-5">
+    <div class="phase-number" style="color:var(--orange)">기획 의도</div>
+    <p>글로벌 온톨로지 인프라 포지셔닝. 수천 개 온톨로지 데이터 기반으로 AI가 온톨로지 간 연결을 자동 발견하고, 산업별 표준 온톨로지가 <strong>자동 진화하는 'Living Ontology'</strong> 시스템.</p>
+  </div>
+
+  <h3>핵심 개발 태스크</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>#</th><th>태스크</th><th>설명</th></tr></thead>
+      <tbody>
+        <tr><td>5-1</td><td><strong>Ontology Federation</strong></td><td>서로 다른 온톨로지 간 엔티티 매핑 자동 발견 (A사 '납품처' = B사 'Supplier')</td></tr>
+        <tr><td>5-2</td><td><strong>Living Ontology</strong></td><td>사용 패턴 분석 → 자동 진화 — 새 관계/엔티티 제안, 불필요 노드 정리</td></tr>
+        <tr><td>5-3</td><td><strong>Industry Standard Packs</strong></td><td>ISO, FIBO, MeSH, schema.org 공식 패키지화</td></tr>
+        <tr><td>5-4</td><td><strong>Multi-LLM Guardrail</strong></td><td>GPT, Claude, Gemini, Llama 멀티 모델 통합 프록시</td></tr>
+        <tr><td>5-5</td><td><strong>Agentic Ontology</strong></td><td>AI 에이전트가 온톨로지를 참조/업데이트하며 작업 (A2A)</td></tr>
+        <tr><td>5-6</td><td><strong>Ontology Analytics</strong></td><td>사용 패턴, 쿼리 분석, 지식 커버리지 맵</td></tr>
+        <tr><td>5-7</td><td><strong>다국어 확장</strong></td><td>JP, CN, ES, DE 다국어 동의어 매핑</td></tr>
+        <tr><td>5-8</td><td><strong>모바일 앱</strong></td><td>iOS/Android 네이티브 앱</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>완료 기준</h3>
+  <div class="checklist">
+    <div class="check-item"><div class="check-box"></div> Marketplace 100+ 공개 온톨로지, 월간 Fork 1,000건+</div>
+    <div class="check-item"><div class="check-box"></div> Guardrail API 월간 100만 호출+</div>
+    <div class="check-item"><div class="check-box"></div> 5개+ 산업 표준 온톨로지 팩 제공</div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ PRICING ═══════════════════════════════════════ -->
+<section class="section" id="pricing">
+  <div class="section-header">
+    <div class="section-label badge-green">Revenue Model</div>
+    <h2>수익 모델</h2>
+  </div>
+
+  <h3>SaaS 구독 플랜</h3>
+  <div class="pricing-grid">
+    <div class="pricing-card">
+      <div class="pricing-name">Free</div>
+      <div class="pricing-price">$0<span>/월</span></div>
+      <ul class="pricing-features">
+        <li>온톨로지 3개</li>
+        <li>AI 설계 10회/일</li>
+        <li>5MB 데이터</li>
+        <li>커뮤니티 접근</li>
+      </ul>
+    </div>
+    <div class="pricing-card featured">
+      <div class="pricing-name">Pro</div>
+      <div class="pricing-price">$29<span>/월</span></div>
+      <ul class="pricing-features">
+        <li>온톨로지 무제한</li>
+        <li>AI 100회/일</li>
+        <li>1GB 데이터</li>
+        <li>Export/Import</li>
+        <li>버전 관리</li>
+      </ul>
+    </div>
+    <div class="pricing-card">
+      <div class="pricing-name">Team</div>
+      <div class="pricing-price">$99<span>/월 (5인)</span></div>
+      <ul class="pricing-features">
+        <li>Pro 전체 기능</li>
+        <li>팀 워크스페이스</li>
+        <li>역할 권한</li>
+        <li>공유 온톨로지</li>
+      </ul>
+    </div>
+    <div class="pricing-card">
+      <div class="pricing-name">Enterprise</div>
+      <div class="pricing-price">문의</div>
+      <ul class="pricing-features">
+        <li>전용 인스턴스</li>
+        <li>SSO · SLA</li>
+        <li>커스텀 컨설팅</li>
+        <li>API 무제한</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Guardrail API 과금 (Phase 4)</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>플랜</th><th>월 호출 수</th><th>가격</th><th>특징</th></tr></thead>
+      <tbody>
+        <tr><td>Developer</td><td>1,000</td><td><strong>무료</strong></td><td>테스트/PoC</td></tr>
+        <tr><td>Startup</td><td>50,000</td><td><strong>$99/월</strong></td><td>단일 온톨로지, 기본 GraphRAG</td></tr>
+        <tr><td>Business</td><td>500,000</td><td><strong>$499/월</strong></td><td>멀티 온톨로지, 고급 GraphRAG, Validation</td></tr>
+        <tr><td>Enterprise</td><td>무제한</td><td><strong>문의</strong></td><td>전용 인프라, SLA, 커스텀 모델</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>추가 수익원</h3>
+  <div class="card-grid">
+    <div class="card">
+      <h4>🏪 Marketplace 수수료</h4>
+      <p>온톨로지 거래 15~20% 수수료</p>
+    </div>
+    <div class="card">
+      <h4>🏢 Enterprise 컨설팅</h4>
+      <p>대기업 맞춤 온톨로지 설계 서비스</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ KPI ═══════════════════════════════════════ -->
+<section class="section" id="kpi">
+  <div class="section-header">
+    <div class="section-label badge-accent">Key Metrics</div>
+    <h2>핵심 성과 지표 (KPI)</h2>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-phase" style="color:var(--red)">Phase 1</div>
+      <div class="kpi-value">70%+</div>
+      <div class="kpi-label">가입 → 첫 온톨로지 완료율</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-phase" style="color:var(--red)">Phase 1</div>
+      <div class="kpi-value">100%</div>
+      <div class="kpi-label">보안 침투 테스트 통과</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-phase" style="color:var(--accent-light)">Phase 2</div>
+      <div class="kpi-value">1,000</div>
+      <div class="kpi-label">대화형 온톨로지 생성/월</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-phase" style="color:var(--accent-light)">Phase 2</div>
+      <div class="kpi-value">5분</div>
+      <div class="kpi-label">평균 설계 시간</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-phase" style="color:var(--green)">Phase 3</div>
+      <div class="kpi-value">5,000</div>
+      <div class="kpi-label">MAU</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-phase" style="color:var(--green)">Phase 3</div>
+      <div class="kpi-value">5%+</div>
+      <div class="kpi-label">유료 전환율</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-phase" style="color:var(--cyan)">Phase 4</div>
+      <div class="kpi-value">10만</div>
+      <div class="kpi-label">Guardrail API 월간 호출</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-phase" style="color:var(--cyan)">Phase 4</div>
+      <div class="kpi-value">70%+</div>
+      <div class="kpi-label">환각 감소율</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-phase" style="color:var(--orange)">Phase 5</div>
+      <div class="kpi-value">50K</div>
+      <div class="kpi-label">글로벌 MAU</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-phase" style="color:var(--orange)">Phase 5</div>
+      <div class="kpi-value">$1M</div>
+      <div class="kpi-label">ARR</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ COMPETITION ═══════════════════════════════════════ -->
+<section class="section" id="competition">
+  <div class="section-header">
+    <div class="section-label badge-orange">Competitive Positioning</div>
+    <h2>경쟁 포지셔닝</h2>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>구분</th><th>Protégé</th><th>Squirro</th><th>Palantir</th><th class="compare-highlight">OntologyHub.ai</th></tr></thead>
+      <tbody>
+        <tr><td><strong>타겟 유저</strong></td><td>온톨로지 전문가</td><td>대기업 데이터팀</td><td>정부/대기업</td><td class="compare-highlight">누구나 (개인~기업)</td></tr>
+        <tr><td><strong>접근 방식</strong></td><td>OWL 수동 편집</td><td>엔터프라이즈 플랫폼</td><td>전사 데이터 통합</td><td class="compare-highlight">AI 대화형 자동 설계</td></tr>
+        <tr><td><strong>학습 곡선</strong></td><td>매우 높음</td><td>높음</td><td>높음</td><td class="compare-highlight">거의 없음</td></tr>
+        <tr><td><strong>가격</strong></td><td>무료 (OSS)</td><td>$100K+/년</td><td>$1M+/년</td><td class="compare-highlight">무료~$499/월</td></tr>
+        <tr><td><strong>온톨로지 공유</strong></td><td>불가</td><td>내부만</td><td>내부만</td><td class="compare-highlight">Marketplace</td></tr>
+        <tr><td><strong>AI 통합</strong></td><td>없음</td><td>GraphRAG</td><td>자체 AI</td><td class="compare-highlight">멀티 LLM + MCP</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ LINKS ═══════════════════════════════════════ -->
+<section class="section" id="links">
+  <div class="section-header">
+    <div class="section-label badge-cyan">Resources</div>
+    <h2>접속 정보</h2>
+  </div>
+
+  <div class="card-grid">
+    <div class="card">
+      <h4>🌐 웹사이트</h4>
+      <p><a href="https://www.ontologyhub.ai" target="_blank" style="color:var(--accent-light)">www.ontologyhub.ai</a></p>
+    </div>
+    <div class="card">
+      <h4>⚙️ 백엔드 API</h4>
+      <p><a href="https://ontologyhubaiengine-production.up.railway.app" target="_blank" style="color:var(--accent-light)">Railway Production</a></p>
+    </div>
+    <div class="card">
+      <h4>📦 GitHub</h4>
+      <p><a href="https://github.com/LukeParkXRX/OntologyHub.ai_Engine.git" target="_blank" style="color:var(--accent-light)">OntologyHub.ai_Engine</a></p>
+    </div>
+    <div class="card">
+      <h4>📌 상태</h4>
+      <p>Coming Soon — Phase 1 완료 후 오픈</p>
+    </div>
+  </div>
+
+  <div style="margin-top:48px; padding:24px; background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border-subtle); text-align:center;">
+    <p style="color:var(--text-muted); font-size:12px; margin:0;">
+      OntologyHub.ai Development Blueprint v1.0 · XRX Technology · Confidential<br>
+      이 문서는 내부 개발팀 공유용이며, 개발 진행에 따라 지속 업데이트됩니다.
+    </p>
+  </div>
+</section>
+
+</div>
+</div>
+
+<button class="print-btn" onclick="window.print()">🖨️ Print / PDF</button>
+
+<script>
+// Sidebar active link tracking
+const sections = document.querySelectorAll('.section');
+const navLinks = document.querySelectorAll('.nav-link');
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(link => link.classList.remove('active'));
+      const target = document.querySelector(`.nav-link[href="#${entry.target.id}"]`);
+      if (target) target.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+
+sections.forEach(section => observer.observe(section));
+
+// Mobile sidebar toggle
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('open');
+}
+function closeSidebar() {
+  if (window.innerWidth <= 1024) {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('overlay').classList.remove('open');
+  }
+}
+</script>
+</body>
+</html>
